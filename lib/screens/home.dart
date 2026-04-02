@@ -1,21 +1,10 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:shan_word_guess/tools/data.dart';
 
 import '../tools/shan_syllable_breaker.dart';
 
-List<String> shanWords = [
-  "သူယူႇတီႈလႂ်",
-  "ၵိၼ်ၶဝ်ႈၵပ်းၽၵ်းသင်",
-  "ၵႂႃႇၵိၼ်ၼိူဝ်ႉၵႆႇ",
-  "သွၼ်လိၵ်ႈတႆးဝႆႉယူႇ",
-  "သိုပ်ႇၽူၼ်းပၼ်တႆးၵေႃႉ",
-  "ၼင်ႈလီလီလႄႈသူ",
-  "ႁႂ်ႈယူႇလီမီးငိုၼ်း",
-  "ႁဝ်းၵႂႃႇၵိၼ်ၶဝ်ႈသွႆး",
-  "ဢမ်ႇမီးငိုၼ်းသေပေး",
-  "သိုပ်ႇၽူၼ်းၸူးၵေႃႉႁၵ်ႉ"
-];
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -41,7 +30,7 @@ class _HomeState extends State<Home> {
   void _refreshGame() {
     setState(() {
       // Logic remained the same, just encapsulated
-      correctWord = shanWords[random.nextInt(shanWords.length)];
+      correctWord = shanSentences[random.nextInt(shanSentences.length)];
       final brokenWords = syllableBreakAsList(correctWord);
       brokenWords.shuffle();
       correctWordLength = brokenWords.length;
