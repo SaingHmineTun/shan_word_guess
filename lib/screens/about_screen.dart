@@ -30,6 +30,9 @@ class AboutScreen extends StatelessWidget {
       backgroundColor: const Color(0xFFF5F7FA), // Light grey background
       appBar: AppBar(
         elevation: 0,
+        iconTheme: IconThemeData(
+          color: Colors.white
+        ),
         backgroundColor: Colors.indigo,
         centerTitle: true,
         title: const Text(
@@ -110,7 +113,7 @@ class AboutScreen extends StatelessWidget {
                     value: "ထုင်ႉမၢဝ်းၶမ်း",
                     onTap: () => _launchUrl(
                       context,
-                      "https://www.facebook.com/100377671433172",
+                      "https://www.facebook.com/profile.php?id=61569069823862",
                     ),
                   ),
                   _buildContactCard(
@@ -118,8 +121,10 @@ class AboutScreen extends StatelessWidget {
                     iconColor: Colors.black87,
                     label: "SOURCE CODE",
                     value: "Get GitHub Repository",
-                    onTap: () =>
-                        _launchUrl(context, "https://github.com/SaingHmineTun"),
+                    onTap: () => _launchUrl(
+                      context,
+                      "https://github.com/SaingHmineTun/shan_word_guess",
+                    ),
                   ),
                   _buildContactCard(
                     icon: DevIcons.chromePlain,
