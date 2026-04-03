@@ -1,8 +1,10 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:shan_word_guess/screens/manage_sentences_screen.dart';
 import 'package:shan_word_guess/tools/data.dart';
 import 'package:shan_word_guess/tools/shan_syllable_breaker.dart';
 
+import '../tools/db_helper.dart';
 import 'about_screen.dart';
 
 class Home extends StatefulWidget {
@@ -15,8 +17,11 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   List<String> contents = [];
   List<String> guessedWords = [];
-  late String correctWord;
-  late String shuffleWord;
+
+  // Initialized with empty strings to prevent LateInitializationError
+  String correctWord = "";
+  String shuffleWord = "";
+
   final random = Random();
 
   // For visual feedback (Border turns green/red)
@@ -28,23 +33,33 @@ class _HomeState extends State<Home> {
     _refreshGame();
   }
 
-  void _refreshGame() {
-    setState(() {
-      isCorrect = null;
-      // Get random sentence from your data.dart
-      correctWord = shanSentences[random.nextInt(shanSentences.length)];
+  Future<void> _refreshGame() async {
+    // Ensure we have data if it's the very first run
+    await DBHelper.checkAndSeed();
 
-      // Break into syllables using your custom tool
-      final brokenWords = syllableBreakAsList(correctWord);
+    final dynamicData = await DBHelper.getData('sentences');
 
-      // Create the shuffled display text
+    if (dynamicData.isNotEmpty) {
+      // Pick exclusively from the Database
+      String selectedWord =
+          dynamicData[random.nextInt(dynamicData.length)]['text'];
+
+      final brokenWords = syllableBreakAsList(selectedWord);
       List<String> shuffledList = List.from(brokenWords)..shuffle();
-      shuffleWord = shuffledList.join(" ");
 
-      // Set the interactive chips
-      contents = List.from(brokenWords)..shuffle();
-      guessedWords.clear();
-    });
+      setState(() {
+        correctWord = selectedWord;
+        shuffleWord = shuffledList.join(" ");
+        isCorrect = null;
+        contents = List.from(brokenWords)..shuffle();
+        guessedWords.clear();
+      });
+    } else {
+      // If user deleted EVERYTHING, show a message
+      setState(() {
+        shuffleWord = "No sentences found. Add some!";
+      });
+    }
   }
 
   void _checkAnswer() {
@@ -60,7 +75,6 @@ class _HomeState extends State<Home> {
             "လၢမ်းပႆႇမႅၼ်ႈၶႃႈ။ ၶတ်းၸႂ်တူၺ်းထႅင်ႈၶႃႈ",
             style: TextStyle(fontFamily: 'NamKhone'),
           ),
-          // Use your Shan font if available
           behavior: SnackBarBehavior.floating,
           backgroundColor: Colors.redAccent,
           duration: Duration(seconds: 2),
@@ -118,7 +132,11 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    // Logic: Show button only when all syllables are picked
+    // Show a loading indicator if data isn't ready yet
+    if (shuffleWord.isEmpty) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
     bool showCheckButton = contents.isEmpty && guessedWords.isNotEmpty;
 
     return Scaffold(
@@ -135,6 +153,19 @@ class _HomeState extends State<Home> {
           IconButton(
             icon: const Icon(Icons.refresh, color: Colors.white),
             onPressed: _refreshGame,
+          ),
+          IconButton(
+            icon: const Icon(Icons.edit, color: Colors.white),
+            onPressed: () async {
+              await Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (ctx) => const ManageSentencesScreen(),
+                ),
+              );
+
+              // 2. This line runs ONLY after the user returns
+              _refreshGame();
+            },
           ),
           IconButton(
             icon: const Icon(Icons.info_outline, color: Colors.white),
@@ -185,7 +216,7 @@ class _HomeState extends State<Home> {
 
           const SizedBox(height: 25),
 
-          // 2. Guessing Area (The interactive slots)
+          // 2. Guessing Area
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -241,7 +272,7 @@ class _HomeState extends State<Home> {
                                     text: str,
                                     isSelected: true,
                                     onTap: () => setState(() {
-                                      isCorrect = null; // reset feedback
+                                      isCorrect = null;
                                       guessedWords.remove(str);
                                       contents.add(str);
                                     }),
@@ -255,7 +286,7 @@ class _HomeState extends State<Home> {
             ),
           ),
 
-          // 3. Conditional Check Button (Animated)
+          // 3. Conditional Check Button
           AnimatedSwitcher(
             duration: const Duration(milliseconds: 300),
             transitionBuilder: (child, animation) =>
@@ -333,7 +364,6 @@ class _HomeState extends State<Home> {
     );
   }
 
-  // Reusable Chip UI
   Widget _buildChip({
     required String text,
     required bool isSelected,
