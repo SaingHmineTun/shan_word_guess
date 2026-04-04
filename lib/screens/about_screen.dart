@@ -5,39 +5,38 @@ import 'package:url_launcher/url_launcher.dart';
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
 
-  // Helper to launch URLs (Facebook, Website, etc.)
+  // Theme Colors to match Home
+  final Color primaryMint = const Color(0xFF9AD7B3);
+  final Color darkGreen = const Color(0xFF2D5A41);
+
   Future<void> _launchUrl(BuildContext context, String urlString) async {
     final Uri url = Uri.parse(urlString);
     if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text("Could not launch link")));
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Could not launch link")),
+        );
+      }
     }
   }
 
-  // Helper to send Email
   Future<void> _sendEmail() async {
-    final Uri emailLaunchUri = Uri(
-      scheme: 'mailto',
-      path: 'tmk.muse@gmail.com',
-    );
+    final Uri emailLaunchUri = Uri(scheme: 'mailto', path: 'tmk.muse@gmail.com');
     await launchUrl(emailLaunchUri);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA), // Light grey background
+      backgroundColor: const Color(0xFFF0F4F2), // Light mint-grey background
       appBar: AppBar(
         elevation: 0,
-        iconTheme: IconThemeData(
-          color: Colors.white
-        ),
-        backgroundColor: Colors.indigo,
+        iconTheme: IconThemeData(color: darkGreen), // Dark green back button
+        backgroundColor: primaryMint,
         centerTitle: true,
-        title: const Text(
-          "လွင်ႈၽူႈၶူင်ႊသၢင်ႈ", // About Developer
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+        title: Text(
+          "လွင်ႈၽူႈၶူင်ႊသၢင်ႈ",
+          style: TextStyle(fontWeight: FontWeight.bold, color: darkGreen),
         ),
       ),
       body: Column(
@@ -45,9 +44,9 @@ class AboutScreen extends StatelessWidget {
           // Top Header Section
           Container(
             width: double.infinity,
-            decoration: const BoxDecoration(
-              color: Colors.indigo,
-              borderRadius: BorderRadius.only(
+            decoration: BoxDecoration(
+              color: primaryMint,
+              borderRadius: const BorderRadius.only(
                 bottomLeft: Radius.circular(40),
                 bottomRight: Radius.circular(40),
               ),
@@ -55,36 +54,32 @@ class AboutScreen extends StatelessWidget {
             child: Column(
               children: [
                 const SizedBox(height: 20),
-                // Profile/Logo Container
                 Container(
                   padding: const EdgeInsets.all(4),
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white24, width: 2),
+                    border: Border.all(color: darkGreen.withOpacity(0.1), width: 2),
                   ),
                   child: const CircleAvatar(
                     radius: 60,
                     backgroundImage: AssetImage('assets/images/tmk.png'),
-                    // backgroundColor: Colors.white10,
-                    // child: Icon(Icons.person, size: 60, color: Colors.white70),
-                    // If you have a photo, use: backgroundImage: AssetImage('assets/your_profile.png'),
                   ),
                 ),
                 const SizedBox(height: 15),
-                const Text(
+                Text(
                   "ထုင်ႉမၢဝ်းၶမ်း",
                   style: TextStyle(
                     fontSize: 26,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                    color: darkGreen,
                     letterSpacing: 1.2,
                   ),
                 ),
-                const Text(
+                Text(
                   "THUNG MAO KHAM ACADEMY",
                   style: TextStyle(
                     fontSize: 12,
-                    color: Colors.white70,
+                    color: darkGreen.withOpacity(0.6),
                     letterSpacing: 2,
                   ),
                 ),
@@ -128,24 +123,24 @@ class AboutScreen extends StatelessWidget {
                   ),
                   _buildContactCard(
                     icon: DevIcons.chromePlain,
-                    iconColor: Colors.blue,
+                    iconColor: Colors.lightGreen,
                     label: "DEVELOPER WEBSITE",
                     value: "www.saimao.top",
                     onTap: () => _launchUrl(context, "https://www.saimao.top"),
                   ),
 
                   const SizedBox(height: 40),
-                  const Text(
+                  Text(
                     "VERSION 1.0.0",
                     style: TextStyle(
-                      color: Colors.grey,
+                      color: darkGreen.withOpacity(0.4),
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const Text(
+                  Text(
                     "© 2026 THUNG MAO KHAM",
-                    style: TextStyle(color: Colors.grey, fontSize: 10),
+                    style: TextStyle(color: darkGreen.withOpacity(0.3), fontSize: 10),
                   ),
                 ],
               ),
@@ -170,7 +165,7 @@ class AboutScreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withOpacity(0.03),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -188,7 +183,7 @@ class AboutScreen extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: iconColor.withOpacity(0.1),
+                    color: iconColor.withOpacity(0.08),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(icon, color: iconColor, size: 24),
@@ -200,10 +195,10 @@ class AboutScreen extends StatelessWidget {
                     children: [
                       Text(
                         label,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 10,
-                          color: Colors.indigo,
+                          color: darkGreen.withOpacity(0.5),
                           letterSpacing: 1,
                         ),
                       ),

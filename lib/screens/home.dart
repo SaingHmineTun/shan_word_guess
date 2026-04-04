@@ -18,14 +18,15 @@ class _HomeState extends State<Home> {
   List<String> contents = [];
   List<String> guessedWords = [];
 
-  // Initialized with empty strings to prevent LateInitializationError
   String correctWord = "";
   String shuffleWord = "";
 
   final random = Random();
-
-  // For visual feedback (Border turns green/red)
   bool? isCorrect;
+
+  // New Theme Color
+  final Color primaryMint = const Color(0xFF9AD7B3);
+  final Color darkGreen = const Color(0xFF2D5A41); // A darker shade for text contrast
 
   @override
   void initState() {
@@ -34,16 +35,11 @@ class _HomeState extends State<Home> {
   }
 
   Future<void> _refreshGame() async {
-    // Ensure we have data if it's the very first run
     await DBHelper.checkAndSeed();
-
     final dynamicData = await DBHelper.getData('sentences');
 
     if (dynamicData.isNotEmpty) {
-      // Pick exclusively from the Database
-      String selectedWord =
-          dynamicData[random.nextInt(dynamicData.length)]['text'];
-
+      String selectedWord = dynamicData[random.nextInt(dynamicData.length)]['text'];
       final brokenWords = syllableBreakAsList(selectedWord);
       List<String> shuffledList = List.from(brokenWords)..shuffle();
 
@@ -55,7 +51,6 @@ class _HomeState extends State<Home> {
         guessedWords.clear();
       });
     } else {
-      // If user deleted EVERYTHING, show a message
       setState(() {
         shuffleWord = "No sentences found. Add some!";
       });
@@ -89,11 +84,7 @@ class _HomeState extends State<Home> {
       barrierDismissible: false,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        title: const Icon(
-          Icons.check_circle_outline,
-          color: Colors.green,
-          size: 80,
-        ),
+        title: const Icon(Icons.check_circle_outline, color: Colors.green, size: 80),
         content: const Text(
           "လၢမ်းမႅၼ်ႈယဝ်ႉၶႃႈ!\nYou guessed it right!",
           textAlign: TextAlign.center,
@@ -109,19 +100,11 @@ class _HomeState extends State<Home> {
                   _refreshGame();
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.indigo,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 40,
-                    vertical: 12,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
+                  backgroundColor: darkGreen, // Use Dark Green for buttons
+                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
-                child: const Text(
-                  "NEXT",
-                  style: TextStyle(color: Colors.white),
-                ),
+                child: const Text("NEXT", style: TextStyle(color: Colors.white)),
               ),
             ),
           ),
@@ -132,48 +115,38 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    // Show a loading indicator if data isn't ready yet
     if (shuffleWord.isEmpty) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return Scaffold(body: Center(child: CircularProgressIndicator(color: primaryMint)));
     }
 
     bool showCheckButton = contents.isEmpty && guessedWords.isNotEmpty;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
+      backgroundColor: const Color(0xFFF0F4F2), // Slightly tinted background
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           "လၢမ်းလိၵ်ႈတႆး",
-          style: TextStyle(fontWeight: FontWeight.w900, color: Colors.white),
+          style: TextStyle(fontWeight: FontWeight.w900, color: darkGreen),
         ),
         centerTitle: true,
-        backgroundColor: Colors.indigo,
+        backgroundColor: primaryMint,
         elevation: 0,
+        iconTheme: IconThemeData(color: darkGreen), // Dark green icons for contrast
         actions: [
+          IconButton(icon: const Icon(Icons.refresh), onPressed: _refreshGame),
           IconButton(
-            icon: const Icon(Icons.refresh, color: Colors.white),
-            onPressed: _refreshGame,
-          ),
-          IconButton(
-            icon: const Icon(Icons.edit, color: Colors.white),
+            icon: const Icon(Icons.edit),
             onPressed: () async {
               await Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (ctx) => const ManageSentencesScreen(),
-                ),
+                MaterialPageRoute(builder: (ctx) => const ManageSentencesScreen()),
               );
-
-              // 2. This line runs ONLY after the user returns
               _refreshGame();
             },
           ),
           IconButton(
-            icon: const Icon(Icons.info_outline, color: Colors.white),
+            icon: const Icon(Icons.info_outline),
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const AboutScreen()),
-              );
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const AboutScreen()));
             },
           ),
         ],
@@ -184,9 +157,9 @@ class _HomeState extends State<Home> {
           Container(
             width: double.infinity,
             padding: const EdgeInsets.fromLTRB(20, 10, 20, 30),
-            decoration: const BoxDecoration(
-              color: Colors.indigo,
-              borderRadius: BorderRadius.only(
+            decoration: BoxDecoration(
+              color: primaryMint,
+              borderRadius: const BorderRadius.only(
                 bottomLeft: Radius.circular(30),
                 bottomRight: Radius.circular(30),
               ),
@@ -195,20 +168,13 @@ class _HomeState extends State<Home> {
               children: [
                 Text(
                   "Rearrange these syllables:",
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.7),
-                    fontSize: 13,
-                  ),
+                  style: TextStyle(color: darkGreen.withOpacity(0.7), fontSize: 13),
                 ),
                 const SizedBox(height: 12),
                 Text(
                   shuffleWord,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w500,
-                  ),
+                  style: TextStyle(color: darkGreen, fontSize: 20, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
@@ -225,11 +191,7 @@ class _HomeState extends State<Home> {
                 children: [
                   const Text(
                     " YOUR ANSWER",
-                    style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black45,
-                    ),
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.black45),
                   ),
                   const SizedBox(height: 10),
                   AnimatedContainer(
@@ -243,43 +205,27 @@ class _HomeState extends State<Home> {
                       border: Border.all(
                         color: isCorrect == true
                             ? Colors.green
-                            : (isCorrect == false
-                                  ? Colors.redAccent
-                                  : Colors.indigo.withOpacity(0.1)),
+                            : (isCorrect == false ? Colors.redAccent : primaryMint.withOpacity(0.3)),
                         width: 2,
                       ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.02),
-                          blurRadius: 10,
-                          offset: const Offset(0, 5),
-                        ),
-                      ],
                     ),
                     child: guessedWords.isEmpty
-                        ? const Center(
-                            child: Text(
-                              "Tap words from below",
-                              style: TextStyle(color: Colors.black26),
-                            ),
-                          )
+                        ? const Center(child: Text("Tap words from below", style: TextStyle(color: Colors.black26)))
                         : Wrap(
-                            spacing: 8,
-                            runSpacing: 8,
-                            children: guessedWords
-                                .map(
-                                  (str) => _buildChip(
-                                    text: str,
-                                    isSelected: true,
-                                    onTap: () => setState(() {
-                                      isCorrect = null;
-                                      guessedWords.remove(str);
-                                      contents.add(str);
-                                    }),
-                                  ),
-                                )
-                                .toList(),
-                          ),
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: guessedWords
+                          .map((str) => _buildChip(
+                        text: str,
+                        isSelected: true,
+                        onTap: () => setState(() {
+                          isCorrect = null;
+                          guessedWords.remove(str);
+                          contents.add(str);
+                        }),
+                      ))
+                          .toList(),
+                    ),
                   ),
                 ],
               ),
@@ -289,38 +235,26 @@ class _HomeState extends State<Home> {
           // 3. Conditional Check Button
           AnimatedSwitcher(
             duration: const Duration(milliseconds: 300),
-            transitionBuilder: (child, animation) =>
-                ScaleTransition(scale: animation, child: child),
+            transitionBuilder: (child, animation) => ScaleTransition(scale: animation, child: child),
             child: showCheckButton
                 ? Padding(
-                    key: const ValueKey("btn"),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 25,
-                      vertical: 15,
-                    ),
-                    child: SizedBox(
-                      width: double.infinity,
-                      height: 55,
-                      child: ElevatedButton(
-                        onPressed: _checkAnswer,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.indigo,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          elevation: 4,
-                        ),
-                        child: const Text(
-                          "CHECK ANSWER",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ),
-                    ),
-                  )
+              key: const ValueKey("btn"),
+              padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 15),
+              child: SizedBox(
+                width: double.infinity,
+                height: 55,
+                child: ElevatedButton(
+                  onPressed: _checkAnswer,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: darkGreen,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                    elevation: 4,
+                  ),
+                  child: const Text("CHECK ANSWER", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                ),
+              ),
+            )
                 : const SizedBox(key: ValueKey("empty"), height: 85),
           ),
 
@@ -329,33 +263,22 @@ class _HomeState extends State<Home> {
             padding: const EdgeInsets.fromLTRB(20, 25, 20, 45),
             decoration: BoxDecoration(
               color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 20,
-                  offset: const Offset(0, -5),
-                ),
-              ],
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(30),
-                topRight: Radius.circular(30),
-              ),
+              boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 20, offset: const Offset(0, -5))],
+              borderRadius: const BorderRadius.only(topLeft: Radius.circular(30), topRight: Radius.circular(30)),
             ),
             child: Wrap(
               alignment: WrapAlignment.center,
               spacing: 12,
               runSpacing: 12,
               children: contents
-                  .map(
-                    (str) => _buildChip(
-                      text: str,
-                      isSelected: false,
-                      onTap: () => setState(() {
-                        guessedWords.add(str);
-                        contents.remove(str);
-                      }),
-                    ),
-                  )
+                  .map((str) => _buildChip(
+                text: str,
+                isSelected: false,
+                onTap: () => setState(() {
+                  guessedWords.add(str);
+                  contents.remove(str);
+                }),
+              ))
                   .toList(),
             ),
           ),
@@ -364,33 +287,21 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Widget _buildChip({
-    required String text,
-    required bool isSelected,
-    required VoidCallback onTap,
-  }) {
+  Widget _buildChip({required String text, required bool isSelected, required VoidCallback onTap}) {
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
         decoration: BoxDecoration(
-          color: isSelected ? Colors.indigo.shade50 : Colors.amber.shade400,
+          color: isSelected ? primaryMint.withOpacity(0.1) : primaryMint,
           borderRadius: BorderRadius.circular(15),
-          boxShadow: isSelected
-              ? null
-              : [
-                  BoxShadow(
-                    color: Colors.amber.withOpacity(0.3),
-                    blurRadius: 6,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
+          border: isSelected ? Border.all(color: primaryMint) : null,
         ),
         child: Text(
           text,
           style: TextStyle(
-            color: isSelected ? Colors.indigo : Colors.black87,
+            color: darkGreen,
             fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
