@@ -26,7 +26,9 @@ class _HomeState extends State<Home> {
 
   // New Theme Color
   final Color primaryMint = const Color(0xFF9AD7B3);
-  final Color darkGreen = const Color(0xFF2D5A41); // A darker shade for text contrast
+  final Color darkGreen = const Color(
+    0xFF2D5A41,
+  ); // A darker shade for text contrast
 
   @override
   void initState() {
@@ -39,7 +41,8 @@ class _HomeState extends State<Home> {
     final dynamicData = await DBHelper.getData('sentences');
 
     if (dynamicData.isNotEmpty) {
-      String selectedWord = dynamicData[random.nextInt(dynamicData.length)]['text'];
+      String selectedWord =
+          dynamicData[random.nextInt(dynamicData.length)]['text'];
       final brokenWords = syllableBreakAsList(selectedWord);
       List<String> shuffledList = List.from(brokenWords)..shuffle();
 
@@ -65,14 +68,15 @@ class _HomeState extends State<Home> {
     } else {
       setState(() => isCorrect = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
+        SnackBar(
+          content: const Text(
             "လၢမ်းပႆႇမႅၼ်ႈၶႃႈ။ ၶတ်းၸႂ်တူၺ်းထႅင်ႈၶႃႈ",
-            style: TextStyle(fontFamily: 'NamKhone'),
           ),
           behavior: SnackBarBehavior.floating,
           backgroundColor: Colors.redAccent,
-          duration: Duration(seconds: 2),
+          duration: const Duration(seconds: 2),
+          // Increase the bottom margin to sit above your bottom container
+          margin: const EdgeInsets.only(bottom: 120, left: 20, right: 20),
         ),
       );
     }
@@ -84,7 +88,11 @@ class _HomeState extends State<Home> {
       barrierDismissible: false,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        title: const Icon(Icons.check_circle_outline, color: Colors.green, size: 80),
+        title: const Icon(
+          Icons.check_circle_outline,
+          color: Colors.green,
+          size: 80,
+        ),
         content: const Text(
           "လၢမ်းမႅၼ်ႈယဝ်ႉၶႃႈ!\nYou guessed it right!",
           textAlign: TextAlign.center,
@@ -101,10 +109,18 @@ class _HomeState extends State<Home> {
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: darkGreen, // Use Dark Green for buttons
-                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 40,
+                    vertical: 12,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
-                child: const Text("NEXT", style: TextStyle(color: Colors.white)),
+                child: const Text(
+                  "NEXT",
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
             ),
           ),
@@ -116,7 +132,9 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     if (shuffleWord.isEmpty) {
-      return Scaffold(body: Center(child: CircularProgressIndicator(color: primaryMint)));
+      return Scaffold(
+        body: Center(child: CircularProgressIndicator(color: primaryMint)),
+      );
     }
 
     bool showCheckButton = contents.isEmpty && guessedWords.isNotEmpty;
@@ -131,14 +149,17 @@ class _HomeState extends State<Home> {
         centerTitle: true,
         backgroundColor: primaryMint,
         elevation: 0,
-        iconTheme: IconThemeData(color: darkGreen), // Dark green icons for contrast
+        iconTheme: IconThemeData(color: darkGreen),
+        // Dark green icons for contrast
         actions: [
           IconButton(icon: const Icon(Icons.refresh), onPressed: _refreshGame),
           IconButton(
             icon: const Icon(Icons.edit),
             onPressed: () async {
               await Navigator.of(context).push(
-                MaterialPageRoute(builder: (ctx) => const ManageSentencesScreen()),
+                MaterialPageRoute(
+                  builder: (ctx) => const ManageSentencesScreen(),
+                ),
               );
               _refreshGame();
             },
@@ -146,7 +167,10 @@ class _HomeState extends State<Home> {
           IconButton(
             icon: const Icon(Icons.info_outline),
             onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => const AboutScreen()));
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const AboutScreen()),
+              );
             },
           ),
         ],
@@ -168,13 +192,20 @@ class _HomeState extends State<Home> {
               children: [
                 Text(
                   "Rearrange these syllables:",
-                  style: TextStyle(color: darkGreen.withOpacity(0.7), fontSize: 13),
+                  style: TextStyle(
+                    color: darkGreen.withOpacity(0.7),
+                    fontSize: 13,
+                  ),
                 ),
                 const SizedBox(height: 12),
                 Text(
                   shuffleWord,
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: darkGreen, fontSize: 20, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    color: darkGreen,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ],
             ),
@@ -191,7 +222,11 @@ class _HomeState extends State<Home> {
                 children: [
                   const Text(
                     " YOUR ANSWER",
-                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.black45),
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black45,
+                    ),
                   ),
                   const SizedBox(height: 10),
                   AnimatedContainer(
@@ -205,26 +240,93 @@ class _HomeState extends State<Home> {
                       border: Border.all(
                         color: isCorrect == true
                             ? Colors.green
-                            : (isCorrect == false ? Colors.redAccent : primaryMint.withOpacity(0.3)),
+                            : (isCorrect == false
+                                  ? Colors.redAccent
+                                  : primaryMint.withOpacity(0.3)),
                         width: 2,
                       ),
                     ),
                     child: guessedWords.isEmpty
-                        ? const Center(child: Text("Tap words from below", style: TextStyle(color: Colors.black26)))
+                        ? const Center(
+                            child: Text(
+                              "Tap words from below",
+                              style: TextStyle(color: Colors.black26),
+                            ),
+                          )
                         : Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: guessedWords
-                          .map((str) => _buildChip(
-                        text: str,
-                        isSelected: true,
-                        onTap: () => setState(() {
-                          isCorrect = null;
-                          guessedWords.remove(str);
-                          contents.add(str);
-                        }),
-                      ))
-                          .toList(),
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: guessedWords
+                                .map(
+                                  (str) => _buildChip(
+                                    text: str,
+                                    isSelected: true,
+                                    onTap: () => setState(() {
+                                      isCorrect = null;
+                                      guessedWords.remove(str);
+                                      contents.add(str);
+                                    }),
+                                  ),
+                                )
+                                .toList(),
+                          ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+// 3 & 4. Integrated Action Area
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 400),
+            curve: Curves.easeInOut,
+            width: double.infinity,
+            padding: EdgeInsets.fromLTRB(20, 25, 20, MediaQuery.of(context).padding.bottom + 20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 20,
+                  offset: const Offset(0, -5),
+                ),
+              ],
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(30),
+                topRight: Radius.circular(30),
+              ),
+            ),
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 300),
+              child: contents.isNotEmpty
+                  ? Wrap(
+                key: const ValueKey("wrap_chips"),
+                alignment: WrapAlignment.center,
+                spacing: 12,
+                runSpacing: 12,
+                children: contents.map((str) => _buildChip(
+                  text: str,
+                  isSelected: false,
+                  onTap: () => setState(() {
+                    guessedWords.add(str);
+                    contents.remove(str);
+                  }),
+                )).toList(),
+              )
+                  : Column(
+                key: const ValueKey("check_btn_area"),
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed: _checkAnswer,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: darkGreen,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                      ),
+                      child: const Text("CHECK ANSWER", style: TextStyle(fontWeight: FontWeight.bold)),
                     ),
                   ),
                 ],
@@ -232,62 +334,16 @@ class _HomeState extends State<Home> {
             ),
           ),
 
-          // 3. Conditional Check Button
-          AnimatedSwitcher(
-            duration: const Duration(milliseconds: 300),
-            transitionBuilder: (child, animation) => ScaleTransition(scale: animation, child: child),
-            child: showCheckButton
-                ? Padding(
-              key: const ValueKey("btn"),
-              padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 15),
-              child: SizedBox(
-                width: double.infinity,
-                height: 55,
-                child: ElevatedButton(
-                  onPressed: _checkAnswer,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: darkGreen,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-                    elevation: 4,
-                  ),
-                  child: const Text("CHECK ANSWER", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                ),
-              ),
-            )
-                : const SizedBox(key: ValueKey("empty"), height: 85),
-          ),
-
-          // 4. Syllable Selection Palette
-          Container(
-            padding: const EdgeInsets.fromLTRB(20, 25, 20, 45),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 20, offset: const Offset(0, -5))],
-              borderRadius: const BorderRadius.only(topLeft: Radius.circular(30), topRight: Radius.circular(30)),
-            ),
-            child: Wrap(
-              alignment: WrapAlignment.center,
-              spacing: 12,
-              runSpacing: 12,
-              children: contents
-                  .map((str) => _buildChip(
-                text: str,
-                isSelected: false,
-                onTap: () => setState(() {
-                  guessedWords.add(str);
-                  contents.remove(str);
-                }),
-              ))
-                  .toList(),
-            ),
-          ),
         ],
       ),
     );
   }
 
-  Widget _buildChip({required String text, required bool isSelected, required VoidCallback onTap}) {
+  Widget _buildChip({
+    required String text,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
